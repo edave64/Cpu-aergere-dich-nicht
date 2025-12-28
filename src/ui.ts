@@ -272,10 +272,27 @@ class ManualIntelligence implements PlayerIntelligence {
 }
 
 document.body.addEventListener("pointerdown", (e) => {
-	const callback = waitingForInput.get(e.target as SVGCircleElement);
+	const target = e.target;
+
+	if (!(target instanceof SVGCircleElement)) {
+		return;
+	}
+
+	const callback = waitingForInput.get(target);
 	if (callback) {
 		waitingForInput.clear();
 		callback();
+	} else {
+		const group = target.closest("g");
+		const className = group?.getAttribute("class");
+		if (group && className?.endsWith("_reserve")) {
+			for (const [circle, callback] of waitingForInput) {
+				if (group.contains(circle)) {
+					waitingForInput.delete(circle);
+					callback();
+				}
+			}
+		}
 	}
 });
 
