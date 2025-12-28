@@ -123,16 +123,28 @@ class Game {
 		this.state = new GameState(
 			[...playerHomes.keys()],
 			new Map(
-				[...playerHomes.keys()].map(([player, homes]) => [
-					player,
-					//@ts-expect-error
-					{
-						random: new RandomIntelligence(),
-						eager: new MoveFurthestFirst(player),
-						cluster: new MoveLaggingFirst(player),
-						manual: new ManualIntelligence(player),
-					}[document.getElementById(player + "-intelligence")!.value],
-				]),
+				[...playerHomes.keys()].map(([player, _homes]) => {
+					const aiValue = (
+						document.getElementById(
+							`${player}-intelligence`,
+						) as HTMLSelectElement
+					).value;
+					let ai: PlayerIntelligence;
+					switch (aiValue) {
+						case "manual":
+							ai = new ManualIntelligence(player);
+							break;
+						case "eager":
+							ai = new MoveFurthestFirst(player);
+							break;
+						case "cluster":
+							ai = new MoveLaggingFirst(player);
+							break;
+						default:
+							ai = new RandomIntelligence();
+					}
+					return [player, ai];
+				}),
 			),
 			playerPaths,
 		);
@@ -192,11 +204,6 @@ class Game {
 			renderState(this.state);
 		}
 	}
-
-	private finished() {
-		this._running = false;
-		this.abortController.abort();
-	}
 }
 
 const fullNames = new Map<PlayerName, string>([
@@ -232,8 +239,8 @@ class ManualIntelligence implements PlayerIntelligence {
 	}
 
 	public getNextMove(
-		state: GameState,
-		rolled: number,
+		_state: GameState,
+		_rolled: number,
 		possibleMoves: [PiecePosition, PiecePosition][],
 	): Promise<[PiecePosition, PiecePosition]> {
 		const promises: Promise<[PiecePosition, PiecePosition]>[] = [];

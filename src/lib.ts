@@ -224,8 +224,8 @@ export class PiecePosition {
 
 export class RandomIntelligence implements PlayerIntelligence {
 	getNextMove(
-		state: GameState,
-		rolled: number,
+		_state: GameState,
+		_rolled: number,
 		possibleMoves: [PiecePosition, PiecePosition][],
 	): [PiecePosition, PiecePosition] {
 		const randomMove =
@@ -243,7 +243,7 @@ export class MoveLaggingFirst implements PlayerIntelligence {
 
 	getNextMove(
 		state: GameState,
-		rolled: number,
+		_rolled: number,
 		possibleMoves: [PiecePosition, PiecePosition][],
 	): [PiecePosition, PiecePosition] {
 		const randomMove = possibleMoves.sort(
@@ -264,7 +264,7 @@ export class MoveFurthestFirst implements PlayerIntelligence {
 
 	getNextMove(
 		state: GameState,
-		rolled: number,
+		_rolled: number,
 		possibleMoves: [PiecePosition, PiecePosition][],
 	): [PiecePosition, PiecePosition] {
 		const randomMove = possibleMoves.sort(
